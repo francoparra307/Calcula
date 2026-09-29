@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Calcula | Calculadoras Médicas</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top, #123b52 0%, #071923 45%, #041017 100%);
+            color: #ffffff;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 100vh;
+            margin: auto;
+            padding: 45px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ENCABEZADO */
+
+        header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .icono-medico {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+            background: rgba(40, 180, 160, 0.12);
+            border: 1px solid rgba(40, 210, 190, 0.35);
+
+            font-size: 35px;
+        }
+
+        h1 {
+            font-size: clamp(55px, 12vw, 110px);
+            font-weight: 800;
+            letter-spacing: 8px;
+            line-height: 0.9;
+
+            background: linear-gradient(
+                135deg,
+                #ffffff,
+                #8ce8dc
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitulo {
+            margin-top: 18px;
+            color: #a9c6cc;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* CALCULADORAS */
+
+        .calculadoras {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .tarjeta {
+            position: relative;
+            overflow: hidden;
+
+            padding: 35px 25px;
+
+            min-height: 210px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255, 255, 255, 0.055);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+
+            backdrop-filter: blur(10px);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                background 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .tarjeta::before {
+            content: "";
+
+            position: absolute;
+
+            width: 150px;
+            height: 150px;
+
+            top: -80px;
+            right: -70px;
+
+            border-radius: 50%;
+
+            background: rgba(57, 210, 190, 0.08);
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-7px);
+
+            border-color: rgba(70, 220, 200, 0.55);
+
+            background: rgba(255, 255, 255, 0.085);
+
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        .tarjeta-icono {
+            width: 70px;
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 18px;
+
+            border-radius: 18px;
+
+            background: rgba(48, 200, 180, 0.11);
+            border: 1px solid rgba(48, 200, 180, 0.2);
+
+            font-size: 34px;
+        }
+
+        .tarjeta h2 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .tarjeta p {
+            color: #9db7bd;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* PIE */
+
+        footer {
+            margin-top: auto;
+            padding-top: 60px;
+
+            color: #65838a;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* MODAL */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(0, 0, 0, 0.72);
+
+            z-index: 1000;
+        }
+
+        .modal.activo {
+            display: flex;
+        }
+
+        .ventana {
+            width: 100%;
+            max-width: 470px;
+
+            padding: 30px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #102d3b,
+                    #071923
+                );
+
+            border: 1px solid rgba(100, 220, 205, 0.25);
+            border-radius: 24px;
+
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.55);
+        }
+
+        .ventana-cabecera {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+        .ventana-cabecera h2 {
+            font-size: 27px;
+        }
+
+        .cerrar {
+            width: 38px;
+            height: 38px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+        .cerrar:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        /* FORMULARIOS */
+
+        .campo {
+            margin-bottom: 18px;
+        }
+
+        .campo label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #b8d0d4;
+
+            font-size: 14px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 11px;
+
+            outline: none;
+
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+
+            font-size: 16px;
+        }
+
+        .campo input:focus,
+        .campo select:focus {
+            border-color: #4fd5c2;
+        }
+
+        .campo select option {
+            background: #102d3b;
+            color: white;
+        }
+
+        .boton-calcular {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-top: 5px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: linear-gradient(
+                135deg,
+                #35cdb8,
+                #218fa0
+            );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: transform 0.2s ease;
+        }
+
+        .boton-calcular:hover {
+            transform: translateY(-2px);
+        }
+
+        /* RESULTADO */
+
+        .resultado {
+            display: none;
+
+            margin-top: 22px;
+            padding: 20px;
+
+            border-radius: 15px;
+
+            background: rgba(50, 210, 190, 0.08);
+            border: 1px solid rgba(50, 210, 190, 0.25);
+
+            text-align: center;
+        }
+
+        .resultado.visible {
+            display: block;
+        }
+
+        .resultado .numero {
+            display: block;
+
+            margin-top: 8px;
+
+            color: #73e4d2;
+
+            font-size: 34px;
+            font-weight: bold;
+        }
+
+        .resultado small {
+            display: block;
+
+            margin-top: 8px;
+
+            color: #9bb8be;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 750px) {
+
+            .contenedor {
+                padding-top: 30px;
+            }
+
+            .calculadoras {
+                grid-template-columns: 1fr;
+            }
+
+            .tarjeta {
+                min-height: 170px;
+            }
+
+            header {
+                margin-bottom: 30px;
+            }
+
+            .ventana {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="contenedor">
+
+        <header>
+
+            <div class="icono-medico">
+                ⚕
+            </div>
+
+            <h1>CALCULA</h1>
+
+            <p class="subtitulo">
+                Herramientas para Medicina y Enfermería
+            </p>
+
+        </header>
+
+
+        <section class="calculadoras">
+
+            <!-- DOSIS -->
+
+            <article
+                class="tarjeta"
+                onclick="abrirCalculadora('dosis')"
+            >
+
+                <div class="tarjeta-icono">
+                    💊
+                </div>
+
+                <h2>Dosis</h2>
+
+                <p>
+                    Calculá el volumen a administrar
+                </p>
+
+            </article>
+
+
+            <!-- GOTEO -->
+
+            <article
+                class="tarjeta"
+                onclick="abrirCalculadora('goteo')"
+            >
+
+                <div class="tarjeta-icono">
+                    💧
+                </div>
+
+                <h2>Goteo</h2>
+
+                <p>
+                    Calculá gotas por minuto y flujo
+                </p>
+
+            </article>
+
+
+            <!-- IMC -->
+
+            <article
+                class="tarjeta"
+                onclick="abrirCalculadora('imc')"
+            >
+
+                <div class="tarjeta-icono">
+                    ⚖️
+                </div>
+
+                <h2>IMC</h2>
+
+                <p>
+                    Calculá el índice de masa corporal
+                </p>
+
+            </article>
+
+        </section>
+
+
+        <footer>
+            CALCULA · Herramientas educativas de cálculo
+        </footer>
+
+    </main>
+
+
+    <!-- MODAL -->
+
+    <div
+        id="modal"
+        class="modal"
+        onclick="cerrarPorFondo(event)"
+    >
+
+        <div
+            class="ventana"
+            onclick="event.stopPropagation()"
+        >
+
+            <div class="ventana-cabecera">
+
+                <h2 id="tituloCalculadora">
+                    Calculadora
+                </h2>
+
+                <button
+                    class="cerrar"
+                    onclick="cerrarCalculadora()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- CONTENIDO DINÁMICO -->
+
+            <div id="contenidoCalculadora"></div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /*
+        ==========================================
+        ABRIR / CERRAR CALCULADORAS
+        ==========================================
+        */
+
+        function abrirCalculadora(tipo) {
+
+            const modal = document.getElementById("modal");
+            const titulo = document.getElementById("tituloCalculadora");
+            const contenido = document.getElementById("contenidoCalculadora");
+
+            modal.classList.add("activo");
+
+            if (tipo === "dosis") {
+
+                titulo.textContent = "💊 Calculadora de Dosis";
+
+                contenido.innerHTML = `
+
+                    <div class="campo">
+                        <label>Dosis indicada (mg)</label>
+
+                        <input
+                            id="dosisIndicada"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 500"
+                        >
+                    </div>
+
+
+                    <div class="campo">
+                        <label>Dosis disponible (mg)</label>
+
+                        <input
+                            id="dosisDisponible"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 250"
+                        >
+                    </div>
+
+
+                    <div class="campo">
+                        <label>Volumen disponible (mL)</label>
+
+                        <input
+                            id="volumenDisponible"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 5"
+                        >
+                    </div>
+
+
+                    <button
+                        class="boton-calcular"
+                        onclick="calcularDosis()"
+                    >
+                        CALCULAR
+                    </button>
+
+
+                    <div
+                        id="resultadoDosis"
+                        class="resultado"
+                    ></div>
+
+                `;
+
+            }
+
+
+            if (tipo === "goteo") {
+
+                titulo.textContent = "💧 Calculadora de Goteo";
+
+                contenido.innerHTML = `
+
+                    <div class="campo">
+
+                        <label>
+                            Volumen a administrar (mL)
+                        </label>
+
+                        <input
+                            id="volumenGoteo"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 500"
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Tiempo (horas)
+                        </label>
+
+                        <input
+                            id="tiempoGoteo"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 4"
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Factor de goteo (gotas/mL)
+                        </label>
+
+                        <select id="factorGoteo">
+
+                            <option value="20">
+                                20 gotas/mL
+                            </option>
+
+                            <option value="15">
+                                15 gotas/mL
+                            </option>
+
+                            <option value="10">
+                                10 gotas/mL
+                            </option>
+
+                            <option value="60">
+                                60 microgotas/mL
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        class="boton-calcular"
+                        onclick="calcularGoteo()"
+                    >
+                        CALCULAR
+                    </button>
+
+
+                    <div
+                        id="resultadoGoteo"
+                        class="resultado"
+                    ></div>
+
+                `;
+
+            }
+
+
+            if (tipo === "imc") {
+
+                titulo.textContent = "⚖️ Calculadora de IMC";
+
+                contenido.innerHTML = `
+
+                    <div class="campo">
+
+                        <label>
+                            Peso (kg)
+                        </label>
+
+                        <input
+                            id="peso"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 70"
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Altura (m)
+                        </label>
+
+                        <input
+                            id="altura"
+                            type="number"
+                            min="0"
+                            step="any"
+                            placeholder="Ej: 1.75"
+                        >
+
+                    </div>
+
+
+                    <button
+                        class="boton-calcular"
+                        onclick="calcularIMC()"
+                    >
+                        CALCULAR
+                    </button>
+
+
+                    <div
+                        id="resultadoIMC"
+                        class="resultado"
+                    ></div>
+
+                `;
+
+            }
+
+        }
+
+
+        function cerrarCalculadora() {
+
+            document
+                .getElementById("modal")
+                .classList.remove("activo");
+
+        }
+
+
+        function cerrarPorFondo(event) {
+
+            if (event.target.id === "modal") {
+
+                cerrarCalculadora();
+
+            }
+
+        }
+
+
+        /*
+        ==========================================
+        CALCULADORA DE DOSIS
+        ==========================================
+
+        Fórmula:
+
+        Dosis indicada × volumen disponible
+        -----------------------------------
+              Dosis disponible
+
+        Resultado = mL
+        */
+
+        function calcularDosis() {
+
+            const indicada =
+                parseFloat(
+                    document.getElementById("dosisIndicada").value
+                );
+
+            const disponible =
+                parseFloat(
+                    document.getElementById("dosisDisponible").value
+                );
+
+            const volumen =
+                parseFloat(
+                    document.getElementById("volumenDisponible").value
+                );
+
+
+            const resultado =
+                document.getElementById("resultadoDosis");
+
+
+            if (
+                isNaN(indicada) ||
+                isNaN(disponible) ||
+                isNaN(volumen) ||
+                disponible <= 0 ||
+                volumen <= 0 ||
+                indicada < 0
+            ) {
+
+                resultado.innerHTML =
+                    "Ingresá valores válidos.";
+
+                resultado.classList.add("visible");
+
+                return;
+            }
+
+
+            const calculo =
+                (indicada * volumen) / disponible;
+
+
+            resultado.innerHTML = `
+
+                Volumen a administrar:
+
+                <span class="numero">
+                    ${formatear(calculo)} mL
+                </span>
+
+                <small>
+                    Fórmula: dosis indicada × volumen /
+                    dosis disponible
+                </small>
+
+            `;
+
+            resultado.classList.add("visible");
+
+        }
+
+
+        /*
+        ==========================================
+        CALCULADORA DE GOTEO
+        ==========================================
+        */
+
+        function calcularGoteo() {
+
+            const volumen =
+                parseFloat(
+                    document.getElementById("volumenGoteo").value
+                );
+
+            const tiempo =
+                parseFloat(
+                    document.getElementById("tiempoGoteo").value
+                );
+
+            const factor =
+                parseFloat(
+                    document.getElementById("factorGoteo").value
+                );
+
+
+            const resultado =
+                document.getElementById("resultadoGoteo");
+
+
+            if (
+                isNaN(volumen) ||
+                isNaN(tiempo) ||
+                volumen <= 0 ||
+                tiempo <= 0
+            ) {
+
+                resultado.innerHTML =
+                    "Ingresá valores válidos.";
+
+                resultado.classList.add("visible");
+
+                return;
+            }
+
+
+            /*
+            mL por hora
+            */
+
+            const mlHora =
+                volumen / tiempo;
+
+
+            /*
+            gotas por minuto
+
+            volumen × factor
+            ----------------
+            tiempo × 60
+            */
+
+            const gotasMinuto =
+                (volumen * factor) /
+                (tiempo * 60);
+
+
+            resultado.innerHTML = `
+
+                Goteo:
+
+                <span class="numero">
+                    ${Math.round(gotasMinuto)} gotas/min
+                </span>
+
+                <small>
+                    Flujo: ${formatear(mlHora)} mL/h
+                </small>
+
+            `;
+
+            resultado.classList.add("visible");
+
+        }
+
+
+        /*
+        ==========================================
+        CALCULADORA DE IMC
+        ==========================================
+        */
+
+        function calcularIMC() {
+
+            const peso =
+                parseFloat(
+                    document.getElementById("peso").value
+                );
+
+            const altura =
+                parseFloat(
+                    document.getElementById("altura").value
+                );
+
+
+            const resultado =
+                document.getElementById("resultadoIMC");
+
+
+            if (
+                isNaN(peso) ||
+                isNaN(altura) ||
+                peso <= 0 ||
+                altura <= 0
+            ) {
+
+                resultado.innerHTML =
+                    "Ingresá valores válidos.";
+
+                resultado.classList.add("visible");
+
+                return;
+            }
+
+
+            const imc =
+                peso / (altura * altura);
+
+
+            let categoria;
+
+
+            if (imc < 18.5) {
+
+                categoria = "Bajo peso";
+
+            } else if (imc < 25) {
+
+                categoria = "Peso normal";
+
+            } else if (imc < 30) {
+
+                categoria = "Sobrepeso";
+
+            } else {
+
+                categoria = "Obesidad";
+
+            }
+
+
+            resultado.innerHTML = `
+
+                IMC:
+
+                <span class="numero">
+                    ${imc.toFixed(1)}
+                </span>
+
+                <small>
+                    Categoría: ${categoria}
+                </small>
+
+            `;
+
+            resultado.classList.add("visible");
+
+        }
+
+
+        /*
+        ==========================================
+        FORMATEAR NÚMEROS
+        ==========================================
+        */
+
+        function formatear(numero) {
+
+            return numero
+                .toFixed(2)
+                .replace(/\.00$/, "")
+                .replace(/(\.\d)0$/, "$1");
+
+        }
+
+
+        /*
+        ==========================================
+        TECLA ESC PARA CERRAR
+        ==========================================
+        */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Escape") {
+
+                    cerrarCalculadora();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
